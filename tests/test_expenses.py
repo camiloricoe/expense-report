@@ -6,7 +6,7 @@ from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
-from report.expenses import Expense, ReportError, parse_row, read_expenses, summary
+from report.expenses import Expense, ReportError, parse_row, read_expenses, summary, totals_by_currency
 
 ROW = {"date": "2026-10-03", "description": "Taxi", "amount": "12.50", "currency": "usd"}
 
@@ -53,7 +53,29 @@ class ReadAndSummarise(unittest.TestCase):
         self.assertEqual(summary([]), "No expenses.")
 
 
+class Totals(unittest.TestCase):
+    def exp(self, amount: str, cur: str) -> Expense:
+        return parse_row({**ROW, "amount": amount, "currency": cur}, 2)
+
+    def test_sums_with_decimal(self) -> None:
+        self.assertEqual(totals_by_currency([self.exp("100.40", "EUR"), self.exp("41.50", "EUR")]), ["EUR 141.90"])
+
+    def test_sorted_and_separate(self) -> None:
+        got = totals_by_currency([self.exp("1", "usd"), self.exp("2", "EUR")])
+        self.assertEqual(got, ["EUR 2.00", "USD 1.00"])
+
+    def test_empty(self) -> None:
+        self.assertEqual(totals_by_currency([]), [])
+
+
 class Cli(unittest.TestCase):
+    def test_prints_totals_after_summary(self) -> None:
+        path = write_csv("date,description,amount,currency\n2026-10-03,Taxi,12.50,USD\n2026-10-05,Lunch,9,EUR\n")
+        out = subprocess.run([sys.executable, "-m", "report", str(path)], capture_output=True, text=True)
+        lines = out.stdout.splitlines()
+        self.assertEqual(lines[1:], ["EUR 9.00", "USD 12.50"])
+        self.assertIn("expenses from", lines[0])
+
     def run_cli(self, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run([sys.executable, "-m", "report", *args], capture_output=True, text=True)
 
