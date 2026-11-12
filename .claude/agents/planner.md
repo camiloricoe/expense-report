@@ -27,3 +27,16 @@ can be delivered.
 If you are given feedback on an earlier plan, read that plan first. Address every point of the
 feedback and keep what it did not object to. If a point conflicts with AGENTS.md or the issue,
 follow AGENTS.md and say so in the plan.
+
+## When the ticket does not fit: cut scope, do not fail
+Before planning, read every file in gates/ and factory.conf (SCOPE, PROTECT_EXTRA). A plan that a
+gate would stop, or that needs a protected file or a new dependency, is a failed plan.
+- Never plan the forbidden part. Plan the largest safe subset that still gives real, testable
+  value with what the repo already has: raw ANSI escape codes instead of a colour library,
+  standard-library parsers (csv, json, xml.etree) instead of third-party ones, plain-text names
+  instead of external URLs, and so on.
+- If a gate limits the size of the change, aim for half of that limit, tests included.
+- Add a section **Scope cut** right after Assumptions: what the issue asked, what you left out and
+  the exact rule (gate file, AGENTS.md line, SCOPE or protected file) that forced the cut. A
+  reviewer must be able to approve the plan as delivered.
+

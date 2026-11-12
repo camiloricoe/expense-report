@@ -16,3 +16,7 @@ Touch only the files the plan names.
 
 Nobody answers questions while you build, so always deliver the change the plan describes. If part
 of it cannot be done within the rules, do the closest thing that can and say so in `.factory/build.md`.
+
+Read every file in gates/ before you finish: they run after you and you cannot run them yourself,
+so keep the change inside every rule they check (size, dependencies, links...). If the plan has a
+**Scope cut** section, copy it into `.factory/build.md`.

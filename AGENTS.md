@@ -16,3 +16,14 @@ Standard library only.
 ## Factory rules
 - Phase state lives in `.factory/` as markdown files. Never put plan or review text in code comments.
 - Only the paths in SCOPE (factory.conf) may change. Do not touch factory.sh, lib/, gates/, .claude/, data/ or this file.
+
+## Exact commands (copy them exactly)
+- Test: `python3 -m unittest discover -s tests -t . -q` (the TEST_CMD in factory.conf). There is no linter.
+- Run them exactly as written: no `cd`, no env vars, no pipes or `&&`, no other spelling.
+  Anything else is blocked by the factory and the run is rejected.
+
+## Review scope
+- Security findings are about the diff (`git diff main`). Files the change did not touch,
+  such as factory.conf, are out of scope for the review.
+- Prefer the smallest change that fully meets the ticket; every gate in gates/ must pass.
+
